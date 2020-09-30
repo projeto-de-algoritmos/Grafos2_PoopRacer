@@ -2,7 +2,7 @@ class Player {
     constructor(game, image, x=0, y=0) {
         this.game = game
         this.entity = this.game.physics.add.sprite(x, y, image);
-        this.entity.setOrigin(0.5, 0.5).setDisplaySize(48, 48).setCollideWorldBounds(true).setDrag(500, 500);
+        this.entity.setOrigin(0.5, 0.5).setDisplaySize(64, 32).setCollideWorldBounds(true).setDrag(500, 500);
 		this.velocity = 200;
 
         this.moveKeys = this.game.input.keyboard.addKeys({
@@ -13,28 +13,6 @@ class Player {
         });
     }
 
-    getHit() {
-        // console.log(this.health)
-        // this.health--;
-        // if(this.health <= 0) {
-        //     this.entity.destroy()
-        // }
-    }
-
-    shoot(player, sight) {
-        // if(this.weapon) {
-        //     return this.weapon.fire(player, sight)
-        // }
-    }
-
-    getWeapon() {
-        // return this.weapon;
-    }
-
-    pickupWeapon(weapon) {
-        // this.game.sound.add('cock').play()
-        // this.weapon = weapon;
-    }
 
     update() {
         if(this.entity.active)  {
@@ -42,22 +20,28 @@ class Player {
             let velocityX = 0;
             let velocityY = 0;
             
-            if(this.moveKeys['right'].isDown)
-			velocityX += this.velocity;
+            // if(this.moveKeys['right'].isDown)
+			// velocityX += this.velocity;
             
-            if(this.moveKeys['left'].isDown)
-			velocityX -= this.velocity;
+            // if(this.moveKeys['left'].isDown)
+			// velocityX -= this.velocity;
             
             if(this.moveKeys['down'].isDown)
-			velocityY += this.velocity;
+            // velocityY += this.velocity;
+                this.game.physics.velocityFromRotation(this.entity.rotation, -200, this.entity.body.velocity);
             
             if(this.moveKeys['up'].isDown)
-			velocityY -= this.velocity;
+            // velocityY -= this.velocity;
+                this.game.physics.velocityFromRotation(this.entity.rotation, 200, this.entity.body.velocity);
             
-            this.entity.setVelocityY(velocityY);
-            this.entity.setVelocityX(velocityX);
+            // this.entity.setVelocityY(velocityY);
+            // this.entity.setVelocityX(velocityX);
         }
 	}
+
+    incrementRotation(rotation) {
+        this.entity.rotation += rotation;
+    }
 
     setRotation(rotation) {
         this.entity.rotation = rotation;

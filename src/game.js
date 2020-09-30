@@ -5,34 +5,6 @@ var MainMenu = new Phaser.Class({
 	},
 	
 	preload: function() {
-		// this.load.image('roadEW', 'assets/roadEW.png');
-		// this.load.image('roadNE', 'assets/roadNE.png');
-		// this.load.image('roadNEWS', 'assets/roadNEWS.png');
-		// this.load.image('roadNS', 'assets/roadNS.png');
-		// this.load.image('roadNW', 'assets/roadNW.png');
-		// this.load.image('roadPLAZA', 'assets/roadPLAZA.png');
-		// this.load.image('roadSE', 'assets/roadSE.png');
-		// this.load.image('roadSW', 'assets/roadSW.png');
-		// this.load.image('roadTE', 'assets/roadTE.png');
-		// this.load.image('roadTN', 'assets/roadTN.png');
-		// this.load.image('roadTS', 'assets/roadTS.png');
-		// this.load.image('roadTW', 'assets/roadTW.png');
-		// tilemaps = [
-		// 	'roadEW',
-		// 	'roadNE',
-		// 	'roadNEWS',
-		// 	'roadNS',
-		// 	'roadNW',
-		// 	'roadPLAZA',
-		// 	'roadSE',
-		// 	'roadSW',
-		// 	'roadTE',
-		// 	'roadTN',
-		// 	'roadTS',
-		// 	'roadTW'
-		// ]
-
-		// this.load.image('tilemap', 'assets/spritesheet_tiles.png');
 		this.load.image('roads', 'assets/roads.png');
 		this.load.spritesheet('spr_enemy', 'assets/spr_enemy.png', { frameWidth: 32, frameHeight: 32 });
 
@@ -80,12 +52,16 @@ function loadStage(stage_name, scene) {
 
 
 function create(scene) {
-    
+    scene.input.on('pointermove', function (e) {
+		if (scene.input.mouse.locked) {
+			scene.player.incrementRotation(e.movementX/200);
+        }
+    }, scene);
 }
 
 function update(scene) {
-    
-
+	scene.player.update();
+	game.input.mouse.requestPointerLock();
 }
 
 var config = {
