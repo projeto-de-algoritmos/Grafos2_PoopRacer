@@ -11,6 +11,7 @@ class Stage {
 		this.background_layer = this.map.createDynamicLayer('Background', tileset, 0, 0);
 		this.wall_layer = this.map.createDynamicLayer('Walls', tileset, 0, 0);
 		this.floor_layer = this.map.createDynamicLayer('Floor', tileset, 0, 0);
+		this.poo_layer = this.map.createDynamicLayer('Poo', tileset, 0, 0);
 
 		let stage_json = game.cache.json.get(stage_name + '_info');
 		this.spawn_point = stage_json.spawn_point;

@@ -36,6 +36,8 @@ var MainMenu = new Phaser.Class({
 		this.load.image('roads', 'assets/roads.png');
 		this.load.spritesheet('spr_enemy', 'assets/spr_enemy.png', { frameWidth: 32, frameHeight: 32 });
 
+		this.load.image('lambo', 'assets/lambo.png');
+
 		this.load.tilemapTiledJSON('circuit1', 'src/stages/circuit1.json');
 		this.load.json('circuit1_info', `src/stages/stage1_info.json`);
 	},
@@ -68,12 +70,12 @@ var Circuit1 = new Phaser.Class({
 function loadStage(stage_name, scene) {
 	scene.stage_finished = false;
 	scene.stage = new Stage(scene, stage_name, 'roads');
-	// scene.player = new Player(scene, 'dude', scene.stage.spawn_point.x * 16, scene.stage.spawn_point.y * 16);
+	scene.player = new Player(scene, 'lambo', scene.stage.spawn_point.x * 16, scene.stage.spawn_point.y * 16);
 	scene.enemies = [];
 
-	scene.stage.enemies.forEach((position) => {
-		scene.enemies.push(new Enemy(scene, position.x * 16, position.y * 16,  position.followDistance, scene.stage.wall_layer));
-	});
+	// scene.stage.enemies.forEach((position) => {
+	// 	scene.enemies.push(new Enemy(scene, position.x * 16, position.y * 16,  position.followDistance, scene.stage.wall_layer));
+	// });
 }
 
 
