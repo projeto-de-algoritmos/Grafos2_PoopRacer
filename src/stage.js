@@ -1,10 +1,16 @@
 class Stage {
 	constructor(game, stage_name, tileset='tilemap') {
 		this.map = game.make.tilemap({ key: stage_name });
-		this.tileset = this.map.addTilesetImage(tileset);
-		this.background_layer = this.map.createStaticLayer('Background', tileset, 0, 0);
-		this.wall_layer = this.map.createStaticLayer('Walls', tileset, 0, 0);
-		this.floor_layer = this.map.createStaticLayer('Floor', tileset, 0, 0);
+		this.tilesets = [];
+		// tilesets.forEach((tileset) => {
+		// 	console.log(tileset)
+		// })
+		this.tileset = this.map.addTilesetImage(tileset, tileset);
+
+
+		this.background_layer = this.map.createDynamicLayer('Background', tileset, 0, 0);
+		this.wall_layer = this.map.createDynamicLayer('Walls', tileset, 0, 0);
+		this.floor_layer = this.map.createDynamicLayer('Floor', tileset, 0, 0);
 
 		let stage_json = game.cache.json.get(stage_name + '_info');
 		this.spawn_point = stage_json.spawn_point;
