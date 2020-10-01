@@ -3,7 +3,7 @@ class Player {
         this.game = game
         this.entity = this.game.physics.add.sprite(x, y, image);
         this.entity.setOrigin(0.5, 0.5).setDisplaySize(64, 32).setCollideWorldBounds(true).setDrag(500, 500);
-		this.velocity = 200;
+        this.velocity = 400;
 
         this.moveKeys = this.game.input.keyboard.addKeys({
             'up': Phaser.Input.Keyboard.KeyCodes.W,
@@ -13,31 +13,34 @@ class Player {
         });
     }
 
-
     update() {
         if(this.entity.active)  {
-
-            let velocityX = 0;
-            let velocityY = 0;
+            //console.log(this.velocity)
+            if(this.moveKeys['down'].isDown) {
+                if(!this.wallHit) {
+                    this.game.physics.velocityFromRotation(this.entity.rotation, -this.velocity, this.entity.body.velocity);
+                } else {
+                    this.game.physics.velocityFromRotation(this.entity.rotation, -this.velocity/10, this.entity.body.velocity);
+                }
+                
+            }
             
-            // if(this.moveKeys['right'].isDown)
-			// velocityX += this.velocity;
-            
-            // if(this.moveKeys['left'].isDown)
-			// velocityX -= this.velocity;
-            
-            if(this.moveKeys['down'].isDown)
-            // velocityY += this.velocity;
-                this.game.physics.velocityFromRotation(this.entity.rotation, -200, this.entity.body.velocity);
-            
-            if(this.moveKeys['up'].isDown)
-            // velocityY -= this.velocity;
-                this.game.physics.velocityFromRotation(this.entity.rotation, 200, this.entity.body.velocity);
-            
-            // this.entity.setVelocityY(velocityY);
-            // this.entity.setVelocityX(velocityX);
+            if(this.moveKeys['up'].isDown) {
+                if(!this.wallHit) {
+                    this.game.physics.velocityFromRotation(this.entity.rotation, this.velocity, this.entity.body.velocity);
+                } else {
+                    this.game.physics.velocityFromRotation(this.entity.rotation, this.velocity/10, this.entity.body.velocity);
+                }
+            }
+            this.wallHit = false;
         }
-	}
+    }
+    
+    hitWall() {
+        this.wallHit = true;
+        //this.entity.body.velocity.x = 0;
+        //this.entity.body.velocity.y = 0;
+    }
 
     incrementRotation(rotation) {
         this.entity.rotation += rotation;
