@@ -8,6 +8,7 @@ var MainMenu = new Phaser.Class({
 		this.load.image('roads', 'assets/roads.png');
 		this.load.spritesheet('spr_enemy', 'assets/spr_enemy.png', { frameWidth: 32, frameHeight: 32 });
 
+		this.load.image('red', 'assets/red.png');
 		this.load.image('lambo', 'assets/lambo.png');
 
 		this.load.tilemapTiledJSON('circuit1', 'src/stages/circuit11.json');
@@ -44,7 +45,18 @@ function loadStage(stage_name, scene) {
 	scene.stage_finished = false;
 	scene.stage = new Stage(scene, stage_name, 'roads');
 	scene.player = new Player(scene, 'lambo', scene.stage.spawn_point.x * 16, scene.stage.spawn_point.y * 16);
+	scene.end_area = scene.add.image(scene.stage.end_area.start.x * 16, scene.stage.end_area.start.y * 16, 'red').setOrigin(0).setDisplaySize((scene.stage.end_area.end.x * 16) - (scene.stage.end_area.start.x * 16), (scene.stage.end_area.end.y * 16) - (scene.stage.end_area.start.y * 16)).setAlpha(0);
 	scene.enemies = [];
+
+	scene.physics.add.staticGroup(scene.end_area);
+
+	scene.physics.add.overlap(scene.end_area, scene.player.entity, () => {
+		if(scene.stage_finished) {
+			game.scene.start(`st_${scene.next_stage}`);
+			game.scene.stop(scene.scene.key);
+			scene.stopped = true;
+		}
+	});
 	
 	scene.stage.enemies.forEach((position) => {
 		scene.enemies.push(new Enemy(scene, position.x * 16, position.y * 16,  position.followDistance, scene.stage.wall_layer));
