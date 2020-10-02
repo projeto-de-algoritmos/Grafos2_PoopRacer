@@ -9,8 +9,10 @@ class Graph {
 	}
 	
 	addEdge(v1, v2, weight) {
-		this.adjList.get(v1).edges.push({v2, weight});
-		this.adjList.get(v2).edges.push({v1, weight});
+		// this.adjList.get(v1).edges.push({v2, weight});
+		// this.adjList.get(v2).edges.push({v1, weight});
+		this.adjList.get(v1).edges.push(v2);
+		this.adjList.get(v2).edges.push(v1);
 	}
 	
 	getVertex(v) {
@@ -60,6 +62,6 @@ class Graph {
 			}
 			
 		})
-		return path[0];
+		return path;
 	}
 }

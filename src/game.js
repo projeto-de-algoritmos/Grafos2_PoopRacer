@@ -6,13 +6,13 @@ var MainMenu = new Phaser.Class({
 	
 	preload: function() {
 		this.load.image('roads', 'assets/roads.png');
-		this.load.spritesheet('spr_enemy', 'assets/spr_enemy.png', { frameWidth: 32, frameHeight: 32 });
+		this.load.image('f12', 'assets/f12.png');
 
-		this.load.image('red', 'assets/red.png');
+		this.load.image('finnish', 'assets/finnish.png');
 		this.load.image('lambo', 'assets/lambo.png');
 
-		this.load.tilemapTiledJSON('circuit1', 'src/stages/circuit11.json');
-		this.load.json('circuit1_info', `src/stages/stage1_info.json`);
+		this.load.tilemapTiledJSON('circuit1', 'src/stages/circuit1.json');
+		this.load.json('circuit1_info', `src/stages/circuit1_info.json`);
 	},
 	
 	create: function() {
@@ -23,7 +23,7 @@ var MainMenu = new Phaser.Class({
 
 var Circuit1 = new Phaser.Class({
 	Extends: Phaser.Scene,
-	initialize: function Stage1() {
+	initialize: function Circuit1() {
 		Phaser.Scene.call(this, {key: 'cq_1'});
 	},
 	
@@ -45,12 +45,12 @@ function loadStage(stage_name, scene) {
 	scene.stage_finished = false;
 	scene.stage = new Stage(scene, stage_name, 'roads');
 	scene.player = new Player(scene, 'lambo', scene.stage.spawn_point.x * 16, scene.stage.spawn_point.y * 16);
-	scene.end_area = scene.add.image(scene.stage.end_area.start.x * 16, scene.stage.end_area.start.y * 16, 'red').setOrigin(0).setDisplaySize((scene.stage.end_area.end.x * 16) - (scene.stage.end_area.start.x * 16), (scene.stage.end_area.end.y * 16) - (scene.stage.end_area.start.y * 16)).setAlpha(0);
+	scene.end_area = scene.add.image(scene.stage.end_area.start.x * 16, scene.stage.end_area.start.y * 16, 'finnish').setOrigin(0).setDisplaySize(16 * 8, 16 * 2);
 	scene.enemies = [];
-
-	scene.physics.add.staticGroup(scene.end_area);
-
-	scene.physics.add.overlap(scene.end_area, scene.player.entity, () => {
+	scene.end = scene.physics.add.staticGroup(scene.end_area);
+	console.log(scene.end)
+	scene.physics.add.overlap(scene.end, scene.player.entity, () => {
+		console.log('notfuck')
 		if(scene.stage_finished) {
 			game.scene.start(`st_${scene.next_stage}`);
 			game.scene.stop(scene.scene.key);
@@ -59,7 +59,7 @@ function loadStage(stage_name, scene) {
 	});
 	
 	scene.stage.enemies.forEach((position) => {
-		scene.enemies.push(new Enemy(scene, position.x * 16, position.y * 16,  position.followDistance, scene.stage.wall_layer));
+		scene.enemies.push(new Enemy(scene, position.x * 16, position.y * 16,  scene.player.entity));
 	});
 }
 
@@ -78,6 +78,9 @@ function create(scene) {
 	}, scene);
 	
 	scene.physics.add.collider(scene.player.entity, scene.stage.wall_layer, () => scene.player.hitWall());
+	scene.enemies.forEach((enemy) => {
+		scene.physics.add.collider(enemy.entity, scene.stage.wall_layer);
+	});
 }
 
 function update(scene) {
@@ -86,7 +89,16 @@ function update(scene) {
 	} else {
 		scene.player.velocity = 400;
 	}
+
+	scene.enemies.forEach((enemy) => {
+		if (scene.stage.poo_layer.getTileAtWorldXY(enemy.entity.x, enemy.entity.y)) {
+			enemy.velocity = 200;
+		} else {
+			enemy = 400;
+		}
+	});
 	
+	scene.enemies.forEach((enemy) => enemy.update(scene));
 	scene.player.update();
 	game.input.mouse.requestPointerLock();
 	

@@ -1,5 +1,6 @@
 class Stage {
 	constructor(game, stage_name, tileset='tilemap') {
+		let stage_json = game.cache.json.get(stage_name + '_info');
 		this.map = game.make.tilemap({ key: stage_name });
 		this.game = game
 		this.tileset = this.map.addTilesetImage(tileset);
@@ -9,7 +10,6 @@ class Stage {
 		this.floor_layer = this.map.createStaticLayer('Floor', tileset, 0, 0);
 		this.poo_layer = this.map.createStaticLayer('Poo', tileset, 0, 0);
 
-		let stage_json = game.cache.json.get(stage_name + '_info');
 		this.spawn_point = stage_json.spawn_point;
 		this.enemies = stage_json.enemies;
 		this.end_area = stage_json.end_area;

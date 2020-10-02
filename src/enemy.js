@@ -1,14 +1,13 @@
 class Enemy {
 	health = 100;
-	constructor(game, x = 0, y = 0, followDistance, collision_layer = null) {
-		this.entity = game.physics.add.sprite(x, y, 'spr_enemy');
-		// this.entity.setCollideWorldBounds(true);
-		// this.target = player;
+	constructor(game, x = 0, y = 0, target, collision_layer = null) {
+		this.entity = game.physics.add.sprite(x, y, 'f12').setDisplaySize(64, 32);
+		this.velocity = 400;
+		this.target = target;
 		this.game = game;
 		// this.collision_layer = collision_layer;
 		// this.followDistance = followDistance;
-		// var now = Date.now()
-		// this.lastCalculated = now - 101
+		this.lastCalculated = Date.now() - 1001
 	}
 	
 	getHit(damage) {
@@ -21,58 +20,72 @@ class Enemy {
 	}
 	
 	followTarget() {
-		// this.entity.rotation = Phaser.Math.Angle.Between(this.entity.x, this.entity.y, this.target.x, this.target.y);
-		// this.game.physics.velocityFromRotation(this.entity.rotation, 200, this.entity.body.velocity);
+		this.entity.rotation = Phaser.Math.Angle.Between(this.entity.x, this.entity.y, this.target.x, this.target.y);
+		this.game.physics.velocityFromRotation(this.entity.rotation, this.velocity, this.entity.body.velocity);
 	}
 	
-	followPath(player, stage){
-		// var now = Date.now();
-		// var thisTile = stage.map.getTileAtWorldXY(this.entity.x, this.entity.y)
-		// var playerTile = stage.map.getTileAtWorldXY(player.entity.x, player.entity.y)
-		// if(thisTile && playerTile) {
-		// 	// console.log(this.lastCalculated - now)
-		// 	if((now - this.lastCalculated ) >= 100) {
-		// 		var thisNode = thisTile.x + (thisTile.y * stage.floor_layer.layer.width)
-		// 		var playerNode = playerTile.x + (playerTile.y * stage.floor_layer.layer.width)
-		// 		this.path = stage.floor_graph.BFSShortestPath(thisNode, playerNode);
-		// 		this.lastCalculated = now;
-		// 		// console.log(this.lastCalculated)
-		// 		if(!this.followDistance || this.path.length <= this.followDistance) {
-		// 			var next_vertex = stage.floor_graph.getVertex(this.path[0]);
-		// 			this.entity.rotation = Phaser.Math.Angle.Between(this.entity.x, this.entity.y, next_vertex.centerPosition.x, next_vertex.centerPosition.y);
-		// 			this.game.physics.velocityFromRotation(this.entity.rotation, 200, this.entity.body.velocity);
-		// 		} else {
-		// 			return;
-		// 		}
-		// 	} else {
-		// 		if(!this.followDistance || this.path.length <= this.followDistance) {
-		// 			var next_vertex = stage.floor_graph.getVertex(this.path[0]);
-		// 			this.entity.rotation = Phaser.Math.Angle.Between(this.entity.x, this.entity.y, next_vertex.centerPosition.x, next_vertex.centerPosition.y);
-		// 			this.game.physics.velocityFromRotation(this.entity.rotation, 200, this.entity.body.velocity);
-		// 		} else {
-		// 			return;
-		// 		}
-		// 	}
-		// }
+	followPath(scene){
+		// var target = scene.end_area.body;
+		var target = scene.player.entity;
+		var now = Date.now();
+		var thisTile = scene.stage.floor_layer.getTileAtWorldXY(this.entity.x, this.entity.y)
+		var finnishTile = scene.stage.floor_layer.getTileAtWorldXY(target.x, target.y)
+		// console.log(thisTile, finnishTile)
+		if(thisTile && finnishTile) {
+			// console.log(this.lastCalculated - now)
+			if((now - this.lastCalculated ) >= 1000) {
+				var thisNode = thisTile.x + (thisTile.y * scene.stage.floor_layer.layer.width)
+				var playerNode = finnishTile.x + (finnishTile.y * scene.stage.floor_layer.layer.width)
+				this.path = scene.stage.floor_graph.BFSShortestPath(thisNode, playerNode);
+				// console.log(this.path)
+				this.lastCalculated = now;
+			// 	// console.log(this.lastCalculated)
+			// 	if(!this.followDistance || this.path.length <= this.followDistance) {
+				var next_vertex = scene.stage.floor_graph.getVertex(this.path[0]);
+				this.entity.rotation = Phaser.Math.Angle.Between(this.entity.x, this.entity.y, next_vertex.centerPosition.x, next_vertex.centerPosition.y);
+				this.game.physics.velocityFromRotation(this.entity.rotation, this.velocity, this.entity.body.velocity);
+			// 	} else {
+			// 		return;
+			// 	}
+			} else {
+				console.log(thisTile.index, this.path[0])
+				if((now - this.lastCalculated ) >= 500) {
+				// if(thisTile.index == this.path[0]) {
+					if(this.path.length >= 2) {
+						this.path.shift();
+					}
+				}
+				var next_vertex = scene.stage.floor_graph.getVertex(this.path[0]);
+				this.entity.rotation = Phaser.Math.Angle.Between(this.entity.x, this.entity.y, next_vertex.centerPosition.x, next_vertex.centerPosition.y);
+				this.game.physics.velocityFromRotation(this.entity.rotation, this.velocity, this.entity.body.velocity);
+			// 	if(!this.followDistance || this.path.length <= this.followDistance) {
+			// 		var next_vertex = stage.floor_graph.getVertex(this.path[0]);
+			// 		this.entity.rotation = Phaser.Math.Angle.Between(this.entity.x, this.entity.y, next_vertex.centerPosition.x, next_vertex.centerPosition.y);
+			// 		this.game.physics.velocityFromRotation(this.entity.rotation, 200, this.entity.body.velocity);
+			// 	} else {
+			// 		return;
+			// 	}
+			}
+		}
 	}
-	
+
 	getInput() {
-		// if(!cast_ray_into_tilemap(this.entity.x, this.entity.y, this.target.x, this.target.y, this.collision_layer).length)
-		// return 2;
-		// else if(1)
-		// return 1;
-		// return 0;
+		if(!cast_ray_into_tilemap(this.entity.x, this.entity.y, this.target.x, this.target.y, this.collision_layer).length)
+		return 2;
+		else if(1)
+		return 1;
+		return 0;
 	}
 	
-	update(player, stage) {
+	update(scene) {
 		// switch(this.getInput()) {
 		// 	case 0:
 		// 		break;
 		// 	case 1:
-		// 		this.followPath(player, stage);
+				this.followPath(scene);
 		// 		break;
 		// 	case 2:
-		// 		this.followTarget();
+				// this.followTarget();
 		// 		break;
 		// }
 	}
