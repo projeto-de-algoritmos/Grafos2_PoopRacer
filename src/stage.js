@@ -1,5 +1,6 @@
 class Stage {
   constructor(game, stage_name, tileset = "tilemap") {
+    let stage_json = game.cache.json.get(stage_name + "_info");
     this.map = game.make.tilemap({ key: stage_name });
     this.game = game;
     this.tileset = this.map.addTilesetImage(tileset);
@@ -14,19 +15,20 @@ class Stage {
     this.floor_layer = this.map.createStaticLayer("Floor", tileset, 0, 0);
     this.poo_layer = this.map.createStaticLayer("Poo", tileset, 0, 0);
 
-    let stage_json = game.cache.json.get(stage_name + "_info");
     this.spawn_point = stage_json.spawn_point;
     this.enemies = stage_json.enemies;
     this.end_area = stage_json.end_area;
     this.items = stage_json.items;
 
     this.generateFloorGraph();
+
     this.wall_layer.setCollisionBetween(0, 40000);
     this.poo_layer.setCollisionBetween(0, 40000);
   }
 
   generateFloorGraph() {
     this.floor_graph = new Graph();
+
     let offset = this.floor_layer.layer.baseTileHeight / 2;
 
     for (var x = 0; x < this.floor_layer.layer.height; x += 1)
@@ -92,6 +94,5 @@ class Stage {
         }
       }
     });
-    console.log(this.floor_graph.adjList);
   }
 }

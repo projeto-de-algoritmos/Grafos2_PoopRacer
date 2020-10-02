@@ -38,8 +38,6 @@ class Player {
     
     hitWall() {
         this.wallHit = true;
-        //this.entity.body.velocity.x = 0;
-        //this.entity.body.velocity.y = 0;
     }
 
     incrementRotation(rotation) {
