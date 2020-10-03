@@ -12,80 +12,85 @@ class Graph {
     this.adjList.get(v1).edges.push({ connectedVertex: v2, weight });
     this.adjList.get(v2).edges.push({ connectedVertex: v1, weight });
   }
-
+  
   getVertex(v) {
     return this.adjList.get(v);
   }
-
+  
   dijkstra(vSource, vDestination) {
     let distance = [];
     let previousVertexes = new Map();
     let visited = [];
     let priorityQeueIndex = [];
-
-    // distance[vSource] = 0;
+    
+    distance[vSource] = 0;
     // previousVertexes[vSource] = vSource;
-    // this.adjList.forEach((vertex, key) => {
-    // if (vSource != key) {
-    //   distance.push(0);
-    //   previousVertexes[key] = null;
+    this.adjList.forEach((vertex, key) => {
+      if (vSource == key) {
+          // distance.push(0);
+          distance[key] = 0;
+          // previousVertexes[key] = null;
+        } else {
+          distance[key] = Number.MAX_SAFE_INTEGER;
+        }
+
+        priorityQeueIndex.push(key);
+    });
+        
+    // for (let i = 0; i < this.adjList.size; i++) {
+    //   if (i == vSource) {
+    //     distance.push(0);
+    //   } else {
+    //     distance.push(Number.MAX_SAFE_INTEGER);
+    //   }
+      
+    //   if (this.adjList.get(i)) {
+    //     priorityQeueIndex.push(i);
+    //   }
     // }
-    // priorityQeueIndex.push(key);
-    // });
-
-    for (let i = 0; i < this.adjList.size; i++) {
-      if (i == vSource) {
-        distance.push(0);
-      } else {
-        distance.push(Number.MAX_SAFE_INTEGER);
-      }
-
-      if (this.adjList.get(i)) {
-        priorityQeueIndex.push(i);
-      }
-    }
-
+        
+    // console.log(distance[vDestination]);
     while (priorityQeueIndex.length > 0) {
-      // console.log("while");
       let vertexIndex = this.getMinIndex(distance, priorityQeueIndex);
       priorityQeueIndex = this.removeItem(priorityQeueIndex, vertexIndex);
       // console.log("priorityQeueIndex.length", priorityQeueIndex.length);
+      
       this.adjList.get(vertexIndex).edges.forEach((neighbour) => {
         let totalDistance = distance[vertexIndex] + neighbour.weight;
-        if (neighbour.connectedVertex == vDestination) {
-          console.log("cdnidsndsncdckdsnj");
+        if (vertexIndex == vDestination) {
+          // console.log('creeper1', totalDistance, vDestination, distance[vertexIndex]);
         }
-        if (
-          !visited.includes(neighbour.connectedVertex) &&
+        if (!visited.includes(neighbour.connectedVertex) &&
           totalDistance < distance[neighbour.connectedVertex]
-        ) {
-          distance[neighbour.connectedVertex] = totalDistance;
-          // previousVertexes[neighbour.connectedVertex] = vertexIndex;
+          ) {
+            distance[neighbour.connectedVertex] = totalDistance;
+            // previousVertexes[neighbour.connectedVertex] = vertexIndex;
           previousVertexes.set(neighbour.connectedVertex, vertexIndex);
         }
       });
       visited.push(vertexIndex);
     }
+    // console.log('danm', visited.includes(vDestination))
 
     return this.getPath(previousVertexes, vSource, vDestination);
   }
   getPath(previousVertexes, vSource, vDestination) {
     let vertex = vDestination;
     let path = [];
-    console.log(
-      "previousVertexes.get(vDestination)",
-      previousVertexes.get(4876),
-      vDestination,
-      previousVertexes
-    );
-    return;
-    // while (vertex !== vSource && ) {
-    //   console.log(vertex);
-    //   // console.log("path", path);
-    //   path.unshift(vertex);
-    //   vertex = previousVertexes[vertex];
-    // }
-    // return path;
+    // console.log(
+    //   "previousVertexes.get(vDestination)",
+    //   previousVertexes.get(vDestination),
+    //   vDestination,
+    //   previousVertexes
+    // );
+    // return;
+    while (vertex != vSource) {
+      // console.log(vertex);
+      // console.log("path", path);
+      path.unshift(vertex);
+      vertex = previousVertexes.get(vertex);
+    }
+    return path;
   }
 
   getMinIndex(distance, priorityQeueIndex) {
@@ -100,13 +105,14 @@ class Graph {
     // });
     priorityQeueIndex.forEach((vertex) => {
       value = distance[vertex];
-      if (value < min || (!min && value)) {
+      if ((value < min) || (!min && value && (min !== 0))) {
         min = value;
         minIndex = vertex;
       }
     });
-
+    
     // return distance.indexOf(Math.min(...distance));
+    // console.log('shit',distance[minIndex])
     return minIndex;
   }
 

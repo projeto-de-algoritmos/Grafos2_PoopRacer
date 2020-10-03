@@ -42,42 +42,71 @@ var Circuit1 = new Phaser.Class({
 });
 
 function loadStage(stage_name, scene) {
-  scene.stage_finished = false;
+  scene.finished = false;
   scene.stage = new Stage(scene, stage_name, "roads");
-  // console.log(scene.stage.floor_graph);
-  scene.player = new Player(
-    scene,
-    "lambo",
-    scene.stage.spawn_point.x * 16,
-    scene.stage.spawn_point.y * 16
-  );
+  
   scene.end_area = scene.add
-    .image(
-      scene.stage.end_area.start.x * 16,
-      scene.stage.end_area.start.y * 16,
-      "finnish"
+  .image(
+    scene.stage.end_area.start.x * 16,
+    scene.stage.end_area.start.y * 16,
+    "finnish"
     )
     .setOrigin(0)
     .setDisplaySize(16 * 8, 16 * 2);
-  scene.enemies = [];
-  scene.end = scene.physics.add.staticGroup(scene.end_area);
+    // console.log(scene.stage.floor_graph);
+    scene.player = new Player(
+      scene,
+      "lambo",
+      scene.stage.spawn_point.x * 16,
+      scene.stage.spawn_point.y * 16
+      );
+      // endStage(scene, 'player')
+      scene.enemies = [];
+      scene.end = scene.physics.add.staticGroup(scene.end_area);
+      scene.stage.enemies.forEach((position) => {
+        scene.enemies.push(
+          new Enemy(scene, position.x * 16, position.y * 16, scene.player.entity)
+          );
+        });
   // console.log(scene.end);
   scene.physics.add.overlap(scene.end, scene.player.entity, () => {
-    // console.log("notfuck");
-    if (scene.stage_finished) {
-      game.scene.start(`st_${scene.next_stage}`);
-      game.scene.stop(scene.scene.key);
-      scene.stopped = true;
+    if(!scene.finished) {
+      endStage(scene, 'player');
+      scene.finished = true;
     }
-  });
+    // if (scene.stage_finished) {
+      //   game.scene.start(`st_${scene.next_stage}`);
+      //   game.scene.stop(scene.scene.key);
+      //   scene.stopped = true;
+      // }
+    });
+    
+    scene.enemies.forEach((enemy) => {
+      console.log(enemy)
+      scene.physics.add.overlap(scene.end, enemy.entity, () => {
+        if(!scene.finished) {
+          endStage(scene, 'enemy');
+          scene.finished = true;
+        }
+      });
+    });
+    
+  }
+  
+  function endStage(scene, winner) {
+    var x = scene.player.entity.x
+    var y = scene.player.entity.y
 
-  scene.stage.enemies.forEach((position) => {
-    scene.enemies.push(
-      new Enemy(scene, position.x * 16, position.y * 16, scene.player.entity)
-    );
-  });
+  if(winner == 'player') {
+    text = scene.add.text(x, y, 'Você Ganhou!!!', { font: "65px Arial", fill: "#19de65" }).setOrigin(0.5, 0.5);
+    // bmtext = scene.add.dynamicBitmapText(60, 200, 'desyrel', 'Você Ganhou!!!', 72);
+    // scene.add.bitmapText(10, 100, 'carrier_command','Você Ganhou!!!',34);
+  } else {
+    text = scene.add.text(x, y, 'Você Perdeu!!!', { font: "65px Arial", fill: "#19de65" }).setOrigin(0.5, 0.5);
+    // bmtext = scene.add.dynamicBitmapText(60, 200, 'desyrel', 'Você Perdeu!!!', 72);
+    // scene.add.bitmapText(10, 100, 'carrier_command','Você Perdeu!!!',34);
+  }
 }
-
 function create(scene) {
   camera = scene.cameras.main;
   camera.setZoom(2);
@@ -89,7 +118,7 @@ function create(scene) {
     "pointermove",
     function (e) {
       if (scene.input.mouse.locked) {
-        scene.player.incrementRotation(e.movementX / 200);
+        scene.player.incrementRotation(e.movementX / 500);
       }
     },
     scene
@@ -98,9 +127,9 @@ function create(scene) {
   scene.physics.add.collider(scene.player.entity, scene.stage.wall_layer, () =>
     scene.player.hitWall()
   );
-  scene.enemies.forEach((enemy) => {
-    scene.physics.add.collider(enemy.entity, scene.stage.wall_layer);
-  });
+  // scene.enemies.forEach((enemy) => {
+  //   scene.physics.add.collider(enemy.entity, scene.stage.wall_layer);
+  // });
 }
 
 function update(scene) {
@@ -119,9 +148,9 @@ function update(scene) {
     if (
       scene.stage.poo_layer.getTileAtWorldXY(enemy.entity.x, enemy.entity.y)
     ) {
-      enemy.velocity = 200;
+      enemy.velocity = 150;
     } else {
-      enemy = 400;
+      enemy.velocity = 300;
     }
   });
 
