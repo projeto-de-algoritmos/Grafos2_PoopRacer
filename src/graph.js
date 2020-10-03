@@ -19,31 +19,49 @@ class Graph {
 
   dijkstra(vSource, vDestination) {
     let distance = [];
-    let previousVertexes = [];
+    let previousVertexes = new Map();
     let visited = [];
     let priorityQeueIndex = [];
 
-    distance[vSource] = 0;
-    previousVertexes[vSource] = vSource;
-    this.adjList.forEach((vertex, key) => {
-      if (vSource != key) {
-        distance[key] = Number.MAX_SAFE_INTEGER;
-        previousVertexes[key] = null;
+    // distance[vSource] = 0;
+    // previousVertexes[vSource] = vSource;
+    // this.adjList.forEach((vertex, key) => {
+    // if (vSource != key) {
+    //   distance.push(0);
+    //   previousVertexes[key] = null;
+    // }
+    // priorityQeueIndex.push(key);
+    // });
+
+    for (let i = 0; i < this.adjList.size; i++) {
+      if (i == vSource) {
+        distance.push(0);
+      } else {
+        distance.push(Number.MAX_SAFE_INTEGER);
       }
-      priorityQeueIndex.push(key);
-    });
+
+      if (this.adjList.get(i)) {
+        priorityQeueIndex.push(i);
+      }
+    }
 
     while (priorityQeueIndex.length > 0) {
-      let vertexIndex = this.getMinIndex(distance);
+      // console.log("while");
+      let vertexIndex = this.getMinIndex(distance, priorityQeueIndex);
       priorityQeueIndex = this.removeItem(priorityQeueIndex, vertexIndex);
+      // console.log("priorityQeueIndex.length", priorityQeueIndex.length);
       this.adjList.get(vertexIndex).edges.forEach((neighbour) => {
         let totalDistance = distance[vertexIndex] + neighbour.weight;
+        if (neighbour.connectedVertex == vDestination) {
+          console.log("cdnidsndsncdckdsnj");
+        }
         if (
           !visited.includes(neighbour.connectedVertex) &&
           totalDistance < distance[neighbour.connectedVertex]
         ) {
           distance[neighbour.connectedVertex] = totalDistance;
-          previousVertexes[neighbour.connectedVertex] = vertexIndex;
+          // previousVertexes[neighbour.connectedVertex] = vertexIndex;
+          previousVertexes.set(neighbour.connectedVertex, vertexIndex);
         }
       });
       visited.push(vertexIndex);
@@ -54,29 +72,47 @@ class Graph {
   getPath(previousVertexes, vSource, vDestination) {
     let vertex = vDestination;
     let path = [];
-    while (vertex !== vSource) {
-      path.unshift(vertex);
-      vertex = previousVertexes[vertex];
-    }
-    return path;
+    console.log(
+      "previousVertexes.get(vDestination)",
+      previousVertexes.get(4876),
+      vDestination,
+      previousVertexes
+    );
+    return;
+    // while (vertex !== vSource && ) {
+    //   console.log(vertex);
+    //   // console.log("path", path);
+    //   path.unshift(vertex);
+    //   vertex = previousVertexes[vertex];
+    // }
+    // return path;
   }
 
-  getMinIndex(distance) {
+  getMinIndex(distance, priorityQeueIndex) {
     let minIndex = 0;
     let value;
-    for (let i = 0; i < distance.length; i++) {
-      value = distance[i];
-      if (distance[minIndex] > value || (!distance[minIndex] && value)) {
-        minIndex = i;
+    let min = null;
+    // distance.forEach((vertex, i) => {
+    //   value = distance[i];
+    //   if (distance[minIndex] > value) {
+    //     minIndex = i;
+    //   }
+    // });
+    priorityQeueIndex.forEach((vertex) => {
+      value = distance[vertex];
+      if (value < min || (!min && value)) {
+        min = value;
+        minIndex = vertex;
       }
-      if (value == 0) {
-        break;
-      }
-    }
+    });
+
+    // return distance.indexOf(Math.min(...distance));
     return minIndex;
   }
 
   removeItem(array, itemToRemove) {
+    // console.log("removeItem", array.includes(itemToRemove));
+
     var newArray = [];
     array.forEach((item) => {
       if (itemToRemove != item) {

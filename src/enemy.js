@@ -55,7 +55,7 @@ class Enemy {
           finnishTile.x + finnishTile.y * scene.stage.floor_layer.layer.width;
         this.path = scene.stage.floor_graph.dijkstra(thisNode, playerNode);
 
-        console.log(this.path);
+        console.log("*********************************", this.path);
         this.lastCalculated = now;
         // 	// console.log(this.lastCalculated)
         // 	if(!this.followDistance || this.path.length <= this.followDistance) {

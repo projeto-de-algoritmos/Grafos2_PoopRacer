@@ -44,7 +44,7 @@ var Circuit1 = new Phaser.Class({
 function loadStage(stage_name, scene) {
   scene.stage_finished = false;
   scene.stage = new Stage(scene, stage_name, "roads");
-  console.log(scene.stage.floor_graph);
+  // console.log(scene.stage.floor_graph);
   scene.player = new Player(
     scene,
     "lambo",
@@ -61,9 +61,9 @@ function loadStage(stage_name, scene) {
     .setDisplaySize(16 * 8, 16 * 2);
   scene.enemies = [];
   scene.end = scene.physics.add.staticGroup(scene.end_area);
-  console.log(scene.end);
+  // console.log(scene.end);
   scene.physics.add.overlap(scene.end, scene.player.entity, () => {
-    console.log("notfuck");
+    // console.log("notfuck");
     if (scene.stage_finished) {
       game.scene.start(`st_${scene.next_stage}`);
       game.scene.stop(scene.scene.key);
